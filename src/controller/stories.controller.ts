@@ -32,34 +32,39 @@ export const getStory = async (req: Request, res: Response) => {
 export const createStory = async (req: Request, res: Response) => {
   try {
     if (!req.file || !req.body.userId) {
+      console.error("File or userId missing");
       return res.status(400).send("File, or userId missing.");
     }
 
     const { userId } = req.body;
 
-    // Upload file to Cloudinary
+    console.log("Uploading file to Cloudinary...");
     const result = await cloudinary.v2.uploader.upload(req.file.path, {
       folder: 'stories',
     });
+    console.log("File uploaded to Cloudinary:", result.secure_url);
 
     const story = new Story({
       content: result.secure_url,
       userId,
     });
     const savedStory = await story.save();
+    console.log("Story saved:", savedStory);
 
-    // Find the user and update their stories array
     const user = await User.findById(userId);
     if (!user) {
+      console.error("User not found:", userId);
       return res.status(404).json({ error: "User not found" });
     }
 
     user.stories.push(savedStory._id as any);
     await user.save();
+    console.log("User updated with new story:", user);
+
     res.json(story);
   } catch (error: any) {
-    console.log(error.message);
-    res.status(500).json({ error: error.message });
+    console.error("Internal server error:", error.message);
+    res.status(500).json({ error: error });
   }
 };
 
