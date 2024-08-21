@@ -3,6 +3,8 @@ import mountRoutes from "../src/routes";
 const express = require("express");
 import cors from "cors";
 import path from "path";
+import { v2 as cloudinary } from 'cloudinary'
+
 import connectDB from "../src/lib/db";
 const app = express();
 const PORT = 3001;
@@ -18,6 +20,13 @@ const corsConfig = {
   methods: "GET,POST,PUT,DELETE",
   credentials: true,
 };
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret:process.env.CLOUDINARY_API_SECRET
+})
+
 
 app.use(cors(corsConfig));
 app.options("*", cors(corsConfig));
