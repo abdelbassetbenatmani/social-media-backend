@@ -13,6 +13,8 @@ const PORT = 3001;
 require("dotenv").config({ path: ".env" });
 
 app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ extended: true })); // For URL-encoded payloads
+
 
 
 const corsConfig = {
@@ -20,6 +22,7 @@ const corsConfig = {
   methods: "GET,POST,PUT,DELETE",
   credentials: true,
 };
+
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_NAME,
@@ -30,10 +33,6 @@ cloudinary.config({
 
 app.use(cors(corsConfig));
 app.options("*", cors(corsConfig));
-
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
-app.use('/favicon.ico', express.static(path.join(__dirname, '../public/favicon.ico')));
-
 
 connectDB();
 
